@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ffffff">
+<title>婚恋条件自测</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --pink:#D4537E;--pink-light:#FBEAF0;--pink-mid:#ED93B1;
+    --purple:#7F77DD;--purple-light:#EEEDFE;
+    --teal:#1D9E75;--teal-light:#E1F5EE;
+    --amber:#BA7517;--amber-light:#FAEEDA;
+    --coral:#D85A30;--coral-light:#FAECE7;
+    --indigo:#534AB7;
+    --text:#1a1a1a;--text-sec:#6b6b6b;
+    --bg:#ffffff;--bg-sec:#f5f5f4;
+    --border:rgba(0,0,0,.1);--border-sec:rgba(0,0,0,.18);
+    --radius-md:8px;--radius-lg:12px;
+  }
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    color:var(--text);background:#fff;-webkit-font-smoothing:antialiased;
+    -webkit-tap-highlight-color:transparent;
+  }
+  #app{max-width:480px;margin:0 auto;background:var(--bg-sec);min-height:100vh;padding-bottom:2.5rem;}
+  @media(min-width:600px){
+    body{display:flex;justify-content:center;background:#ece8e2;}
+    #app{width:480px;margin:2rem auto;min-height:auto;border-radius:24px;overflow:hidden;box-shadow:0 12px 48px rgba(0,0,0,.14);}
+  }
+  .screen{display:none;}
+  .screen.active{display:block;animation:fade .25s ease;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+
+  /* HERO */
+  .hero{background:linear-gradient(160deg,#FBEAF0 0%,#EEEDFE 55%,#E1F5EE 100%);padding:2.5rem 1.5rem 1.75rem;text-align:center;border-radius:0 0 28px 28px;margin-bottom:1.25rem;}
+  .hero-emoji{font-size:44px;margin-bottom:.6rem;}
+  .hero h1{font-size:22px;font-weight:600;margin-bottom:.4rem;letter-spacing:-.3px;}
+  .hero p{font-size:14px;color:#5a5a5a;line-height:1.65;}
+  .tag-row{display:flex;gap:6px;justify-content:center;margin-top:.85rem;flex-wrap:wrap;}
+  .tag{font-size:12px;padding:4px 11px;border-radius:999px;background:#fff;color:#993556;border:1px solid var(--pink-mid);font-weight:500;}
+
+  /* PRIVACY */
+  .privacy-bar{margin:0 1rem .75rem;background:var(--teal-light);border:1px solid #9FE1CB;border-radius:var(--radius-md);padding:.65rem 1rem;display:flex;gap:8px;align-items:flex-start;}
+  .privacy-bar p{font-size:13px;color:#085041;line-height:1.6;}
+
+  /* PROGRESS */
+  .progress-bar-wrap{padding:1.25rem 1.5rem .25rem;}
+  .progress-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--text-sec);margin-bottom:6px;}
+  .progress-track{height:4px;background:var(--bg-sec);border-radius:999px;overflow:hidden;border:1px solid var(--border);}
+  .progress-fill{height:100%;width:0;background:linear-gradient(90deg,var(--pink-mid),var(--purple));border-radius:999px;transition:width .35s ease;}
+
+  /* SECTION LABEL */
+  .section-label{display:flex;align-items:center;gap:8px;padding:.75rem 1.5rem .6rem;}
+  .section-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+  .section-label h2{font-size:15px;font-weight:600;color:var(--text);}
+
+  /* CARD */
+  .form-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.1rem;margin:0 1rem .75rem;}
+  .field-label{font-size:13px;color:var(--text-sec);margin-bottom:.5rem;display:block;}
+
+  /* GENDER */
+  .gender-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .gender-btn{padding:.7rem;border-radius:var(--radius-md);border:1px solid var(--border-sec);background:var(--bg-sec);color:var(--text);font-size:15px;cursor:pointer;text-align:center;transition:all .15s;font-family:inherit;}
+  .gender-btn.sel{background:var(--pink-light);border-color:var(--pink-mid);color:#993556;font-weight:600;}
+
+  /* SLIDER */
+  .slider-wrap{padding:.25rem 0;}
+  .slider-val{font-size:18px;font-weight:600;color:var(--text);text-align:center;margin-bottom:8px;}
+  input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:linear-gradient(90deg,var(--pink-mid),var(--purple));border-radius:999px;outline:none;cursor:pointer;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:2px solid var(--pink);box-shadow:0 1px 4px rgba(0,0,0,.15);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:2px solid var(--pink);cursor:pointer;}
+  .slider-scale{display:flex;justify-content:space-between;font-size:11px;color:#9a9a9a;margin-top:5px;}
+
+  /* OPTIONS */
+  .opts{display:grid;gap:8px;}
+  .opt{padding:.65rem .8rem;border-radius:var(--radius-md);border:1px solid var(--border-sec);background:var(--bg-sec);color:var(--text);font-size:14px;cursor:pointer;text-align:left;transition:all .15s;display:flex;align-items:center;justify-content:space-between;line-height:1.4;font-family:inherit;}
+  .opt.sel{background:var(--pink-light);border-color:var(--pink-mid);color:#993556;font-weight:500;}
+  .opt .ck{font-size:13px;opacity:0;transition:opacity .15s;flex-shrink:0;margin-left:6px;}
+  .opt.sel .ck{opacity:1;}
+
+  /* NAV */
+  .nav-wrap{padding:1rem 1.5rem 0;}
+  .btn-next{width:100%;padding:.9rem;border-radius:999px;border:none;background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff;font-size:16px;font-weight:600;cursor:pointer;transition:opacity .15s;letter-spacing:.2px;font-family:inherit;}
+  .btn-next:active{opacity:.85;transform:scale(.99);}
+  .btn-next:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-back{width:100%;padding:.6rem;border:none;background:transparent;color:var(--text-sec);font-size:14px;cursor:pointer;margin-top:.5rem;text-decoration:underline;text-underline-offset:3px;font-family:inherit;}
+  .warn{padding:0 1.5rem;font-size:12px;color:var(--coral);text-align:center;margin-top:.6rem;min-height:16px;}
+
+  /* RESULT */
+  .result-hero{padding:1.75rem 1.5rem .5rem;text-align:center;}
+  .r-badge{display:inline-flex;align-items:center;gap:5px;padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;margin-bottom:.85rem;background:var(--pink-light);color:#993556;}
+  .r-title{font-size:24px;font-weight:700;margin-bottom:.4rem;color:var(--text);}
+  .r-sub{font-size:14px;color:var(--text-sec);line-height:1.65;}
+  .score-ring-wrap{display:flex;justify-content:center;margin:1.25rem 0 .4rem;}
+  .score-ring{width:120px;height:120px;position:relative;}
+  .score-ring svg{transform:rotate(-90deg);}
+  .score-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+  .score-num{font-size:28px;font-weight:700;color:var(--text);line-height:1.1;}
+  .score-lbl{font-size:11px;color:var(--text-sec);}
+
+  .radar-wrap{padding:.25rem 0 .6rem;display:flex;justify-content:center;}
+  .radar-wrap svg{width:100%;max-width:400px;height:auto;display:block;}
+  .radar-legend{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px 6px;padding-top:.7rem;border-top:1px solid var(--border);}
+  .rl-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-sec);white-space:nowrap;}
+  .rl-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .rl-item b{color:var(--text);font-weight:600;margin-left:auto;font-size:11.5px;}
+
+  .sec-div{display:flex;align-items:center;gap:8px;padding:.4rem 1rem .75rem;}
+  .sec-div-line{flex:1;height:1px;background:var(--border);}
+  .sec-div-txt{font-size:12px;color:var(--text-sec);white-space:nowrap;}
+
+  .dual-profiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 1rem;margin-bottom:.75rem;}
+  .profile-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;}
+  .profile-head{padding:.7rem .85rem .55rem;border-bottom:1px solid var(--border);}
+  .profile-head-label{font-size:11px;font-weight:600;padding:2px 8px;border-radius:999px;display:inline-block;margin-bottom:4px;}
+  .profile-head-title{font-size:13px;font-weight:600;color:var(--text);}
+  .profile-row{display:flex;flex-direction:column;padding:.5rem .85rem;border-bottom:1px solid var(--border);}
+  .profile-row:last-child{border-bottom:none;}
+  .profile-key{font-size:10px;color:var(--text-sec);margin-bottom:2px;}
+  .profile-val{font-size:12px;font-weight:500;color:var(--text);line-height:1.45;}
+
+  .a-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1.1rem;margin:0 1rem .75rem;}
+  .a-card h3{font-size:14px;font-weight:600;margin-bottom:.65rem;color:var(--text);}
+  .a-card p{font-size:14px;color:var(--text-sec);line-height:1.75;}
+  .a-card p strong{color:var(--text);}
+
+  .analysis-item{display:flex;gap:10px;align-items:flex-start;padding:.55rem 0;border-bottom:1px solid var(--border);}
+  .analysis-item:last-child{border-bottom:none;}
+  .analysis-bar{width:4px;min-height:36px;border-radius:2px;flex-shrink:0;margin-top:2px;}
+  .analysis-body{flex:1;}
+  .analysis-dim{font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;}
+  .analysis-txt{font-size:13px;color:var(--text-sec);line-height:1.6;}
+
+  .adv-list{list-style:none;}
+  .adv-list li{display:flex;gap:8px;align-items:flex-start;font-size:14px;color:var(--text-sec);line-height:1.6;padding:4px 0;}
+  .adv-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:7px;}
+
+  .restart-btn{display:block;margin:.75rem auto .25rem;padding:.55rem 1.5rem;border:none;background:transparent;color:var(--text-sec);font-size:14px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;font-family:inherit;}
+  .foot-note{font-size:11px;line-height:1.8;color:#9a9a9a;text-align:center;margin:.6rem 1.5rem 0;}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- 首页 -->
+  <section id="home" class="screen active">
+    <div class="hero">
+      <div class="hero-emoji">💘</div>
+      <h1>婚恋条件自测</h1>
+      <p>9 个维度，约 3 分钟<br>看看你的综合条件大概处在什么位置</p>
+      <div class="tag-row">
+        <span class="tag">📊 9大维度</span>
+        <span class="tag">🎯 双画像</span>
+        <span class="tag">💬 详细解析</span>
+      </div>
+    </div>
+
+    <div class="privacy-bar">
+      <span style="font-size:16px;flex-shrink:0">🔒</span>
+      <p>你填写的所有信息<strong>仅在本地计算使用</strong>，不上传任何服务器，不存储任何个人数据，请放心作答。</p>
+    </div>
+
+    <div class="form-card">
+      <p style="font-size:14px;color:var(--text-sec);line-height:1.75">测试共 <strong style="color:var(--text)">9个维度</strong>，约需 <strong style="color:var(--text)">3分钟</strong>。结果将给出你的综合分、九维雷达图，以及专属的<strong style="color:var(--text)">「理想型」&「底线型」双画像</strong>。</p>
+    </div>
+
+    <div class="form-card">
+      <label class="field-label">你的性别</label>
+      <div class="gender-row">
+        <button class="gender-btn" data-g="女">👩 女生</button>
+        <button class="gender-btn" data-g="男">👨 男生</button>
+      </div>
+    </div>
+
+    <div class="nav-wrap">
+      <button class="btn-next" id="startBtn" disabled>开始测试</button>
+    </div>
+    <p class="foot-note">趣味娱乐向测试，分数仅供参考，不代表任何人的真实价值。</p>
+  </section>
+
+  <!-- 答题 -->
+  <section id="flow" class="screen">
+    <div class="progress-bar-wrap">
+      <div class="progress-labels"><span id="stepTitle">基本信息</span><span id="stepIndex">1 / 9</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+    </div>
+    <div class="section-label"><div class="section-dot" id="stepDot"></div><h2 id="stepH2">基本信息</h2></div>
+    <div id="stepFields"></div>
+    <div class="warn" id="warn"></div>
+    <div class="nav-wrap">
+      <button class="btn-next" id="nextBtn">下一步</button>
+      <button class="btn-back" id="backBtn">返回上一步</button>
+    </div>
+  </section>
+
+  <!-- 结果 -->
+  <section id="result" class="screen">
+    <div class="result-hero">
+      <div class="r-badge" id="band">—</div>
+      <div class="r-title">你的婚恋条件画像</div>
+      <div class="r-sub" id="judge"></div>
+      <div class="score-ring-wrap">
+        <div class="score-ring">
+          <svg width="120" height="120" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="#f0ede8" stroke-width="8"></circle>
+            <circle id="ringFg" cx="60" cy="60" r="54" fill="none" stroke="url(#g)" stroke-width="8" stroke-dasharray="339.29" stroke-dashoffset="339.29" stroke-linecap="round"></circle>
+            <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#ED93B1"></stop><stop offset="100%" stop-color="#7F77DD"></stop></linearGradient></defs>
+          </svg>
+          <div class="score-center"><div class="score-num" id="scoreNum">0</div><div class="score-lbl">综合得分</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="a-card">
+      <h3>📈 九维雷达</h3>
+      <div class="radar-wrap"><svg id="radar" viewBox="0 0 340 300"></svg></div>
+      <div class="radar-legend" id="radarLegend"></div>
+    </div>
+
+    <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-txt">你的专属双画像</div><div class="sec-div-line"></div></div>
+    <div class="dual-profiles">
+      <div class="profile-card">
+        <div class="profile-head">
+          <span class="profile-head-label" style="background:#EEEDFE;color:#3C3489">理想型</span>
+          <div class="profile-head-title">心中理想对象</div>
+        </div>
+        <div class="profile-row"><div class="profile-key">年龄区间</div><div class="profile-val" id="pAgeA">—</div></div>
+        <div class="profile-row"><div class="profile-key">月收入参考</div><div class="profile-val">与你相近或略高</div></div>
+        <div class="profile-row"><div class="profile-key">资产 / 房产</div><div class="profile-val">有稳定住所，无重大负债</div></div>
+        <div class="profile-row"><div class="profile-key">家庭背景</div><div class="profile-val">关系简单，父母能自给</div></div>
+        <div class="profile-row"><div class="profile-key">学历要求</div><div class="profile-val">大专及以上</div></div>
+        <div class="profile-row"><div class="profile-key">职业方向</div><div class="profile-val">有稳定工作</div></div>
+        <div class="profile-row"><div class="profile-key">城市</div><div class="profile-val">同城或可协商</div></div>
+        <div class="profile-row"><div class="profile-key">外貌形象</div><div class="profile-val">整洁得体</div></div>
+        <div class="profile-row"><div class="profile-key">赡养压力</div><div class="profile-val">轻度可接受</div></div>
+      </div>
+      <div class="profile-card">
+        <div class="profile-head">
+          <span class="profile-head-label" style="background:#FAEEDA;color:#633806">底线型</span>
+          <div class="profile-head-title">最低可接受线</div>
+        </div>
+        <div class="profile-row"><div class="profile-key">年龄区间</div><div class="profile-val" id="pAgeB">—</div></div>
+        <div class="profile-row"><div class="profile-key">月收入参考</div><div class="profile-val">能覆盖自身开销</div></div>
+        <div class="profile-row"><div class="profile-key">资产 / 房产</div><div class="profile-val">无重大负债</div></div>
+        <div class="profile-row"><div class="profile-key">家庭背景</div><div class="profile-val">无严重负担</div></div>
+        <div class="profile-row"><div class="profile-key">学历要求</div><div class="profile-val">不限</div></div>
+        <div class="profile-row"><div class="profile-key">职业方向</div><div class="profile-val">有正当收入</div></div>
+        <div class="profile-row"><div class="profile-key">城市</div><div class="profile-val">可协商</div></div>
+        <div class="profile-row"><div class="profile-key">外貌形象</div><div class="profile-val">顺眼即可</div></div>
+        <div class="profile-row"><div class="profile-key">赡养压力</div><div class="profile-val">可协商</div></div>
+      </div>
+    </div>
+
+    <div class="a-card">
+      <h3>📌 关于这份画像</h3>
+      <p>理想型是你在条件最优情况下可争取的对象范围，底线型是维持匹配平衡的最低参考。两者之间的区间，才是你的真实匹配带。</p>
+    </div>
+
+    <div class="sec-div"><div class="sec-div-line"></div><div class="sec-div-txt">维度分析 & 建议</div><div class="sec-div-line"></div></div>
+
+    <div class="a-card">
+      <h3>📊 你的维度分析</h3>
+      <p id="dimIntro" style="margin-bottom:.75rem"></p>
+      <div id="analysis"></div>
+    </div>
+
+    <div class="a-card">
+      <h3>💡 给你的个性化建议</h3>
+      <ul class="adv-list" id="advice"></ul>
+    </div>
+
+    <div class="a-card">
+      <h3>❤️ 写在最后</h3>
+      <p id="closing"></p>
+    </div>
+
+    <button class="restart-btn" id="restartBtn">重新测试</button>
+    <p class="foot-note">分数为娱乐化参考，不代表婚恋价值，也不构成择偶建议。<br>请勿用分数评价他人。</p>
+  </section>
+
+</div>
+
+<script>
+const state = {gender:""};
+
+const STEPS = [
+  {
+    title:"基本信息",
+    fields:[
+      {k:"age", type:"slider", label:"你的年龄", min:22, max:45, step:1, def:28, unit:"岁"},
+      {k:"city", type:"chips", label:"所在城市", opts:[["一线城市",100],["新一线城市",90],["二线城市",75],["三线及以下",55]]},
+      {k:"hukou", type:"chips", label:"户籍情况", opts:[["一线城市户籍",100],["省会/重点城市",85],["普通城市",70],["县域/乡镇",55]]}
+    ]
+  },
+  {
+    title:"学历与职业",
+    fields:[
+      {k:"edu", type:"chips", label:"最高学历", opts:[["高中及以下",40],["大专",60],["本科",80],["硕士",92],["博士",100]]},
+      {k:"job", type:"chips", label:"职业类型", opts:[["体制内/事业单位",100],["国企",92],["大厂/外企",90],["普通企业",70],["自由职业",60],["创业中",65],["暂时待业",35]]}
+    ]
+  },
+  {
+    title:"收入与住房",
+    fields:[
+      {k:"income", type:"slider", label:"月收入（税后）", min:3, max:40, step:1, def:10, unit:"千"},
+      {k:"house", type:"chips", label:"房产情况", opts:[["暂无房产",40],["有房有贷款",70],["全款一套",95],["多套",100]]}
+    ]
+  },
+  {
+    title:"家庭资产",
+    fields:[
+      {k:"asset", type:"chips", label:"家庭资产量级", opts:[["50 万以下",40],["50–100 万",55],["100–300 万",70],["300–500 万",85],["500 万以上",100]]}
+    ]
+  },
+  {
+    title:"家庭结构",
+    fields:[
+      {k:"family", type:"chips", label:"你的家庭情况", opts:[["独生，父母有退休金",95],["非独生，父母有退休金",85],["独生，需赡养父母",70],["非独生，需共同赡养",60],["家庭负担较重",40]]}
+    ]
+  },
+  {
+    title:"外貌与形象",
+    fields:[
+      {k:"height", type:"slider", label:"身高", min:150, max:195, step:1, def:168, unit:"cm"},
+      {k:"look", type:"chips", label:"外貌自评", opts:[["很普通",50],["中等",65],["中上",80],["很出众",95]]}
+    ]
+  },
+  {
+    title:"性格特质",
+    fields:[
+      {k:"personality", type:"chips", label:"情绪与沟通", opts:[["情绪很稳，也好沟通",95],["比较好相处",82],["一般",65],["容易波动",45]]}
+    ]
+  },
+  {
+    title:"情感态度",
+    fields:[
+      {k:"emotion", type:"chips", label:"面对感情，你更接近", opts:[["主动表达，也愿意推进",95],["慢热，但会回应",80],["观望，等对方先",60],["回避，不太敢开始",40]]}
+    ]
+  },
+  {
+    title:"择偶期待",
+    fields:[
+      {k:"expect", type:"chips", label:"你的择偶清单", opts:[["分得清必要和加分项",100],["有几条硬标准",80],["期待比较理想化",55],["还没想清楚",40]]}
+    ]
+  }
+];
+
+const DIM_DEFS = [
+  {key:"age", name:"年龄", short:"年龄", color:"#D4537E"},
+  {key:"city", name:"城市户籍", short:"城市", color:"#7F77DD"},
+  {key:"eduJob", name:"学历职业", short:"学历", color:"#1D9E75"},
+  {key:"economy", name:"个人经济", short:"经济", color:"#BA7517"},
+  {key:"asset", name:"家庭资产", short:"资产", color:"#1D9E75"},
+  {key:"family", name:"家庭结构", short:"家庭", color:"#D85A30"},
+  {key:"look", name:"外貌形象", short:"外貌", color:"#D85A30"},
+  {key:"personality", name:"性格特质", short:"性格", color:"#534AB7"},
+  {key:"emotion", name:"情感态度", short:"情感", color:"#BA7517"}
+];
+
+const DOT_COLORS = ["#D4537E","#7F77DD","#1D9E75","#1D9E75","#BA7517","#D85A30","#534AB7","#D4537E","#7F77DD"];
+
+const ANALYSIS = {
+  age:{high:"年龄处于相对从容的区间，选择面和主动权都比较充足。",mid:"年龄不是问题，关键是别被年龄推着做决定。",low:"年龄带来的紧迫感更容易影响判断，先把节奏放稳。"},
+  city:{high:"城市与户籍的组合比较稳定，是很多人会优先考虑的因素。",mid:"城市条件中等，愿意协商的话，选择面会更宽。",low:"城市因素可能带来一些限制，提前聊清楚定居计划更重要。"},
+  eduJob:{high:"学历和职业的组合比较有竞争力，沟通时也更容易建立信任。",mid:"学历职业属于中等区间，能力和成长性可以补上很多。",low:"这一项相对弱一些，用作品、稳定性和成长路径去补更有效。"},
+  economy:{high:"个人经济基础比较扎实，长期相处的安全感更强。",mid:"经济条件中等，先把收支和储蓄理顺会更从容。",low:"个人经济是当前最需要补的一环，先做预算和储蓄计划。"},
+  asset:{high:"家庭资产背景是加分项，婚后生活的缓冲更足。",mid:"家庭资产中等，把钱的事提前说清楚就好。",low:"家庭资产不是你能决定的，别把它变成自我评价。"},
+  family:{high:"家庭结构简单、赡养压力小，是长期关系的稳定因素。",mid:"家庭情况中等，提前沟通赡养分工更重要。",low:"家庭负担相对重一些，更需要找能一起面对的人。"},
+  look:{high:"外形条件是你的加分项，但长期关系还是看相处。",mid:"外形中等，整洁和状态比五官更影响第一印象。",low:"外形不必焦虑，干净、得体、有精神就是很大的加分。"},
+  personality:{high:"情绪稳定、好沟通，是长期关系里最值钱的一项。",mid:"性格整体不错，练习表达感受会更顺。",low:"情绪波动可能影响相处，先从“说清楚”开始练。"},
+  emotion:{high:"你愿意主动表达，也接得住关系里的不确定，这很难得。",mid:"你的情感节奏偏稳，遇到合适的人会慢慢打开。",low:"你更习惯观望或回避，先练习表达一个小需求就好。"}
+};
+
+const $ = id => document.getElementById(id);
+const screens = {home:$("home"), flow:$("flow"), result:$("result")};
+function show(n){Object.values(screens).forEach(s=>s.classList.remove("active"));screens[n].classList.add("active");window.scrollTo(0,0);}
+
+let stepIdx = 0;
+
+/* 首页性别 */
+document.querySelectorAll(".gender-btn").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".gender-btn").forEach(x=>x.classList.remove("sel"));
+    b.classList.add("sel");
+    state.gender = b.dataset.g;
+    $("startBtn").disabled = false;
+  });
+});
+
+function incomeScore(k){
+  const v = Number(k);
+  return Math.max(30, Math.min(100, Math.round(30 + (v-3)*(70/37))));
+}
+function ageScore(a){
+  if(a<=24) return 95;
+  if(a<=27) return 100;
+  if(a<=30) return 92;
+  if(a<=33) return 78;
+  if(a<=36) return 64;
+  if(a<=40) return 50;
+  return 38;
+}
+function heightScore(h){
+  if(h>=185) return 90;
+  if(h>=178) return 88;
+  if(h>=172) return 85;
+  if(h>=165) return 80;
+  if(h>=160) return 72;
+  return 62;
+}
+
+function renderStep(){
+  const step = STEPS[stepIdx];
+  $("stepTitle").textContent = step.title;
+  $("stepH2").textContent = step.title;
+  $("stepIndex").textContent = (stepIdx+1) + " / " + STEPS.length;
+  $("progress").style.width = ((stepIdx+1)/STEPS.length*100) + "%";
+  $("stepDot").style.background = DOT_COLORS[stepIdx % DOT_COLORS.length];
+  $("warn").textContent = "";
+  const box = $("stepFields");
+  box.innerHTML = "";
+
+  step.fields.forEach(f=>{
+    const card = document.createElement("div");
+    card.className = "form-card";
+    if(f.type === "slider"){
+      if(state[f.k] === undefined) state[f.k] = f.def;
+      card.innerHTML = `<label class="field-label">${f.label}</label>
+        <div class="slider-wrap">
+          <div class="slider-val" id="val_${f.k}">${state[f.k]}${f.unit}</div>
+          <input type="range" id="in_${f.k}" min="${f.min}" max="${f.max}" step="${f.step}" value="${state[f.k]}">
+          <div class="slider-scale"><span>${f.min}${f.unit}</span><span>${f.max}${f.unit}</span></div>
+        </div>`;
+      box.appendChild(card);
+      const input = card.querySelector("input");
+      input.addEventListener("input", ()=>{
+        state[f.k] = Number(input.value);
+        card.querySelector(".slider-val").textContent = input.value + f.unit;
+      });
+    } else {
+      const twoCol = f.opts.length <= 4 && f.opts.every(o=>o[0].length <= 7);
+      card.innerHTML = `<label class="field-label">${f.label}</label>
+        <div class="opts"${twoCol ? ' style="grid-template-columns:1fr 1fr"' : ""}></div>`;
+      box.appendChild(card);
+      const opts = card.querySelector(".opts");
+      f.opts.forEach(([text,score])=>{
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "opt" + (state[f.k] && state[f.k].text === text ? " sel" : "");
+        b.innerHTML = `<span>${text}</span><span class="ck">✓</span>`;
+        b.addEventListener("click",()=>{
+          [...opts.children].forEach(c=>c.classList.remove("sel"));
+          b.classList.add("sel");
+          state[f.k] = {text, score};
+          $("warn").textContent = "";
+        });
+        opts.appendChild(b);
+      });
+    }
+  });
+
+  $("nextBtn").textContent = stepIdx === STEPS.length-1 ? "查看我的定位" : "下一步";
+}
+
+function validateStep(){
+  const step = STEPS[stepIdx];
+  const missing = step.fields.filter(f=> f.type === "chips" && !state[f.k]);
+  if(missing.length){
+    $("warn").textContent = "还有选项没有选择，先选一个再继续";
+    return false;
+  }
+  return true;
+}
+
+function buildDims(){
+  const pick = k => state[k] ? state[k].score : 0;
+  const dims = {
+    age: ageScore(state.age),
+    city: Math.round((pick("city") + pick("hukou"))/2),
+    eduJob: Math.round((pick("edu") + pick("job"))/2),
+    economy: Math.round((incomeScore(state.income) + pick("house"))/2),
+    asset: pick("asset"),
+    family: pick("family"),
+    look: Math.round((heightScore(state.height) + pick("look"))/2),
+    personality: pick("personality"),
+    emotion: pick("emotion")
+  };
+  return dims;
+}
+
+function colorOf(s){
+  if(s>=75) return "#1D9E75";
+  if(s>=60) return "#BA7517";
+  if(s>=45) return "#D85A30";
+  return "#C0504D";
+}
+
+function bandOf(total){
+  if(total>=85) return {name:"条件拔尖型", judge:"你的条件组合比较突出，选择面宽。越是这样，越要想清楚自己要什么。"};
+  if(total>=75) return {name:"稳占上风型", judge:"你有几项明显优势，也有可以补的地方。把优势说清楚，比一味加条件更有用。"};
+  if(total>=65) return {name:"中上均衡型", judge:"你处在中等偏上的区间，整体比较均衡。关键是找到同频，而不是追求满分。"};
+  if(total>=55) return {name:"稳步蓄力型", judge:"你的基础不差，只是有几项还在积累。先把能补的补上，比焦虑更有用。"};
+  return {name:"上升潜力型", judge:"现在的分数不代表以后。你更需要的是清晰的方向和稳定的行动，而不是一张分数表。"};
+}
+
+function drawRadar(dims){
+  const n = DIM_DEFS.length, R = 96, cx = 170, cy = 148;
+  const ang = i => -Math.PI/2 + i*2*Math.PI/n;
+  const px = (i,r) => cx + Math.cos(ang(i))*r;
+  const py = (i,r) => cy + Math.sin(ang(i))*r;
+  let g = "";
+
+  [0.2,0.4,0.6,0.8,1].forEach(f=>{
+    const pts = DIM_DEFS.map((d,i)=>`${px(i,R*f).toFixed(1)},${py(i,R*f).toFixed(1)}`).join(" ");
+    g += `<polygon points="${pts}" fill="${f===1 ? "#faf9f7" : "none"}" stroke="#e7e3de" stroke-width="1"/>`;
+  });
+  DIM_DEFS.forEach((d,i)=>{
+    g += `<line x1="${cx}" y1="${cy}" x2="${px(i,R).toFixed(1)}" y2="${py(i,R).toFixed(1)}" stroke="#eeeae5" stroke-width="1"/>`;
+  });
+
+  const poly = DIM_DEFS.map((d,i)=>{
+    const s = dims[d.key];
+    return `${px(i,R*s/100).toFixed(1)},${py(i,R*s/100).toFixed(1)}`;
+  }).join(" ");
+  g += `<polygon points="${poly}" fill="rgba(212,83,126,.14)" stroke="#D4537E" stroke-width="2" stroke-linejoin="round"/>`;
+
+  DIM_DEFS.forEach((d,i)=>{
+    const s = dims[d.key];
+    g += `<circle cx="${px(i,R*s/100).toFixed(1)}" cy="${py(i,R*s/100).toFixed(1)}" r="3.5" fill="${d.color}" stroke="#fff" stroke-width="1.5"/>`;
+    const lx = px(i,R+22), ly = py(i,R+22);
+    const c = Math.cos(ang(i));
+    const anchor = c > .25 ? "start" : (c < -.25 ? "end" : "middle");
+    g += `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${anchor}" dominant-baseline="middle" font-size="10.5" fill="#6b6b6b">${d.short}<tspan fill="${d.color}" font-weight="700" dx="3">${s}</tspan></text>`;
+  });
+
+  $("radar").innerHTML = g;
+  $("radarLegend").innerHTML = DIM_DEFS.map(d=>
+    `<div class="rl-item"><span class="rl-dot" style="background:${d.color}"></span>${d.short}<b>${dims[d.key]}</b></div>`
+  ).join("");
+}
+
+function renderResult(){
+  const dims = buildDims();
+  const total = Math.round(DIM_DEFS.reduce((s,d)=>s+dims[d.key],0)/DIM_DEFS.length);
+  const band = bandOf(total);
+
+  $("scoreNum").textContent = total;
+  $("band").textContent = band.name;
+  $("judge").textContent = band.judge;
+
+  const circ = 2 * Math.PI * 54;
+  $("ringFg").style.strokeDashoffset = circ * (1 - total/100);
+
+  drawRadar(dims);
+
+  const sorted = [...DIM_DEFS].sort((a,b)=>dims[b.key]-dims[a.key]);
+  const top = sorted[0];
+  const low = [...DIM_DEFS].sort((a,b)=>dims[a.key]-dims[b.key])[0];
+  const level = s => s>=75 ? "high" : (s>=55 ? "mid" : "low");
+
+  $("dimIntro").innerHTML = `综合得分 <strong>${total}分</strong>，整体属于<strong>「${band.name}」</strong>。最突出的优势是<strong style="color:${top.color}">${top.name}（${dims[top.key]}分）</strong>，最需要关注的是<strong>${low.name}（${dims[low.key]}分）</strong>。`;
+
+  const items = [
+    {dim: top.name + " · 最突出", color: top.color, text: ANALYSIS[top.key][level(dims[top.key])]},
+    {dim: low.name + " · 待补强", color: low.color, text: ANALYSIS[low.key][level(dims[low.key])]}
+  ];
+  DIM_DEFS.forEach(d=>{
+    if(d.key===top.key || d.key===low.key) return;
+    if(dims[d.key] < 60) items.push({dim:d.name, color:d.color, text:ANALYSIS[d.key].low});
+  });
+  $("analysis").innerHTML = items.map(it=>`
+    <div class="analysis-item">
+      <div class="analysis-bar" style="background:${it.color}"></div>
+      <div class="analysis-body">
+        <div class="analysis-dim">${it.dim}</div>
+        <div class="analysis-txt">${it.text}</div>
+      </div>
+    </div>`).join("");
+
+  const advice = [
+    {c: top.color, t: `先把「必要项」控制在 3 条以内，其余都当成加分项，选择面会宽很多。`},
+    {c: low.color, t: `「${low.name}」不用急着解释，用稳定的行动和具体的生活细节去补，比口头保证可信。`},
+    {c: "#7F77DD", t: `相亲时优先讲优势项「${top.name}」，用一件真实的小事佐证，比形容词更有说服力。`}
+  ];
+  $("advice").innerHTML = advice.map(a=>`<li><div class="adv-dot" style="background:${a.c}"></div>${a.t}</li>`).join("");
+
+  const age = state.age;
+  $("pAgeA").textContent = `相差 4 岁以内（约 ${Math.max(22,age-4)}–${age+4} 岁）`;
+  $("pAgeB").textContent = `相差 7 岁以内（约 ${Math.max(22,age-7)}–${age+7} 岁）`;
+
+  const genderLine = state.gender === "女"
+    ? "经济独立和情绪稳定，在长期关系里都是加分项，不需要为了迎合谁而收紧自己。"
+    : "稳定、会沟通、尊重对方边界，比单纯堆条件更容易被长期选择。";
+  $("closing").innerHTML = `这份画像只是一个基于常见相亲语境的参考框架，不是筛选清单。<br>${genderLine}<br>真实的关系里，聊得来、愿意一起成长，比分数重要得多。`;
+
+  show("result");
+}
+
+$("startBtn").addEventListener("click",()=>{
+  stepIdx = 0; renderStep(); show("flow");
+});
+$("backBtn").addEventListener("click",()=>{
+  if(stepIdx>0){ stepIdx--; renderStep(); }
+  else show("home");
+});
+$("nextBtn").addEventListener("click",()=>{
+  if(!validateStep()) return;
+  if(stepIdx < STEPS.length-1){ stepIdx++; renderStep(); }
+  else renderResult();
+});
+$("restartBtn").addEventListener("click",()=>{
+  Object.keys(state).forEach(k=>delete state[k]);
+  stepIdx = 0;
+  document.querySelectorAll(".gender-btn").forEach(b=>b.classList.remove("sel"));
+  $("startBtn").disabled = true;
+  show("home");
+});
+</script>
+</body>
+</html>
